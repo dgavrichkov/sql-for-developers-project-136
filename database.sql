@@ -114,7 +114,7 @@ CREATE TABLE Quizzes (
 );
 
 CREATE TABLE questions (
-  id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY
+  id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   quiz_id BIGINT NOT NULL REFERENCES Quizzes(id),
   text TEXT NOT NULL
 );
@@ -139,23 +139,11 @@ CREATE TABLE Exercises (
 CREATE TABLE Discussions (
   id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   lesson_id BIGINT REFERENCES Lessons (id) NOT NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE Discussion_messages (
-  id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-  discussion_id BIGINT REFERENCES Discussions (id) NOT NULL,
   user_id BIGINT REFERENCES Users (id) NOT NULL,
   content TEXT NOT NULL,
+  parent_id BIGINT REFERENCES Discussions (id), -- для вложенных комментариев
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE Discussion_messages_links (
-  from_message_id BIGINT NOT NULL REFERENCES Discussion_messages (id),
-  to_message_id BIGINT NOT NULL REFERENCES Discussion_messages (id),
-  PRIMARY KEY (message_id, discussion_id)
 );
 
 CREATE TABLE Blog (
