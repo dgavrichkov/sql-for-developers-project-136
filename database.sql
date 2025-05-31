@@ -13,8 +13,8 @@ CREATE TABLE lessons (
   name VARCHAR(255) NOT NULL,
   content TEXT,
   video_url VARCHAR(255),
-  position INT NOT NULL,
-  course_id BIGINT NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
+  position INT,
+  course_id BIGINT REFERENCES courses(id),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   deleted_at TIMESTAMP DEFAULT NULL
