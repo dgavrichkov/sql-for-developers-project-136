@@ -157,13 +157,13 @@ CREATE TABLE discussions (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-
+CREATE TYPE blog_status AS ENUM ('created', 'in moderation', 'published', 'archived');
 CREATE TABLE blogs (
   id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   user_id BIGINT REFERENCES users (id) NOT NULL,
   name VARCHAR(255) NOT NULL,
   content TEXT NOT NULL,
-  status VARCHAR(50) NOT NULL,
+  status blog_status NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
