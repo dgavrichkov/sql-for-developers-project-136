@@ -63,7 +63,7 @@ CREATE TABLE users (
   id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   name VARCHAR(255) NOT NULL,
   email VARCHAR(255) NOT NULL UNIQUE,
-  password_hash VARCHAR(60) NOT NULL,
+  password_hash VARCHAR(60),
   teaching_group_id BIGINT REFERENCES teaching_groups(id) NOT NULL,
   role VARCHAR(50) NOT NULL, -- 'student', 'teacher', 'admin'
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
