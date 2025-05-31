@@ -1,19 +1,21 @@
-DROP TABLE IF EXISTS discussions;
-DROP TABLE IF EXISTS program_completions;
-DROP TABLE IF EXISTS course_modules;
-DROP TABLE IF EXISTS program_modules;
-DROP TABLE IF EXISTS programs;
-DROP TABLE IF EXISTS modules;
-DROP TABLE IF EXISTS enrollments;
-DROP TABLE IF EXISTS payments;
-DROP TABLE IF EXISTS certificates;
-DROP TABLE IF EXISTS quizzes;
-DROP TABLE IF EXISTS exercises;
-DROP TABLE IF EXISTS blogs;
-DROP TABLE IF EXISTS lessons;
-DROP TABLE IF EXISTS courses;
-DROP TABLE IF EXISTS users;
-DROP TABLE IF EXISTS teaching_groups;
+TRUNCATE TABLE 
+  discussions,
+  program_completions,
+  course_modules,
+  program_modules,
+  programs,
+  modules,
+  enrollments,
+  payments,
+  certificates,
+  quizzes,
+  exercises,
+  blogs,
+  lessons,
+  courses,
+  users,
+  teaching_groups
+RESTART IDENTITY CASCADE;
 
 
 CREATE TABLE courses (
