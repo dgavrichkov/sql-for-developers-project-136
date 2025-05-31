@@ -1,3 +1,4 @@
+-- Очистка всех таблиц перед созданием (если база не пересоздаётся между тестами)
 TRUNCATE TABLE 
   discussions,
   program_completions,
@@ -17,7 +18,25 @@ TRUNCATE TABLE
   teaching_groups
 RESTART IDENTITY CASCADE;
 
+-- Удаление таблиц, если они существуют
+DROP TABLE IF EXISTS discussions;
+DROP TABLE IF EXISTS program_completions;
+DROP TABLE IF EXISTS course_modules;
+DROP TABLE IF EXISTS program_modules;
+DROP TABLE IF EXISTS programs;
+DROP TABLE IF EXISTS modules;
+DROP TABLE IF EXISTS enrollments;
+DROP TABLE IF EXISTS payments;
+DROP TABLE IF EXISTS certificates;
+DROP TABLE IF EXISTS quizzes;
+DROP TABLE IF EXISTS exercises;
+DROP TABLE IF EXISTS blogs;
+DROP TABLE IF EXISTS lessons;
+DROP TABLE IF EXISTS courses;
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS teaching_groups;
 
+-- Создание таблиц
 CREATE TABLE courses (
   id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   name VARCHAR(255) NOT NULL,
@@ -57,14 +76,12 @@ CREATE TABLE programs (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Связь между программами и модулями - многие ко многим
 CREATE TABLE program_modules (
   program_id BIGINT NOT NULL REFERENCES programs(id),
   module_id BIGINT NOT NULL REFERENCES modules(id),
   PRIMARY KEY (program_id, module_id)
 );
 
--- Связь между курсами и модулями - многие ко многим
 CREATE TABLE course_modules (
   course_id BIGINT NOT NULL REFERENCES courses(id),
   module_id BIGINT NOT NULL REFERENCES modules(id),
@@ -84,7 +101,7 @@ CREATE TABLE users (
   email VARCHAR(255) NOT NULL UNIQUE,
   password_hash VARCHAR(60),
   teaching_group_id BIGINT REFERENCES teaching_groups(id),
-  role VARCHAR(50) NOT NULL, -- 'student', 'teacher', 'admin'
+  role VARCHAR(50) NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   deleted_at TIMESTAMP DEFAULT NULL
@@ -138,27 +155,10 @@ CREATE TABLE quizzes (
   id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   lesson_id BIGINT REFERENCES lessons (id) NOT NULL,
   name VARCHAR(255) NOT NULL,
-  content JSONB NOT NULL, -- JSONB для хранения вопросов и вариантов ответов
+  content JSONB NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-
--- CREATE TABLE questions (
---   id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
---   quiz_id BIGINT NOT NULL REFERENCES quizzes(id),
---   text TEXT NOT NULL,
---   answer_value TEXT, -- какой ответ приводит к этому вопросу
---   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
---   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
--- );
-
--- Связи между вопросами (ветвление)
--- CREATE TABLE question_links (
---   from_question_id BIGINT NOT NULL REFERENCES questions(id),
---   to_question_id BIGINT NOT NULL REFERENCES questions(id),
---   answer_value TEXT NOT NULL, -- напр. 'yes', 'no', 'A', 'B', или ID варианта
---   PRIMARY KEY (from_question_id, answer_value)
--- );
 
 CREATE TABLE exercises (
   id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
@@ -183,7 +183,7 @@ CREATE TABLE blogs (
   user_id BIGINT REFERENCES users (id) NOT NULL,
   name VARCHAR(255) NOT NULL,
   content TEXT NOT NULL,
-  status VARCHAR(50) NOT NULL, -- created, in moderation, published, archived
+  status VARCHAR(50) NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
