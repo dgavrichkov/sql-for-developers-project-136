@@ -1,23 +1,3 @@
--- Очистка всех таблиц перед созданием (если база не пересоздаётся между тестами)
-TRUNCATE TABLE 
-  discussions,
-  program_completions,
-  course_modules,
-  program_modules,
-  programs,
-  modules,
-  enrollments,
-  payments,
-  certificates,
-  quizzes,
-  exercises,
-  blogs,
-  lessons,
-  courses,
-  users,
-  teaching_groups
-RESTART IDENTITY CASCADE;
-
 -- Удаление таблиц, если они существуют
 DROP TABLE IF EXISTS discussions;
 DROP TABLE IF EXISTS program_completions;
@@ -90,7 +70,7 @@ CREATE TABLE course_modules (
 
 CREATE TABLE teaching_groups (
   id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-  slug VARCHAR(255) NOT NULL UNIQUE,
+  slug VARCHAR(255) NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
