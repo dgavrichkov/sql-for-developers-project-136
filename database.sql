@@ -5,7 +5,7 @@ CREATE TABLE courses (
   description TEXT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  deleted_at TIMESTAMP
+  deleted_at TIMESTAMP DEFAULT NULL
 );
 
 CREATE TABLE lessons (
@@ -14,10 +14,10 @@ CREATE TABLE lessons (
   content TEXT,
   video_url VARCHAR(255),
   position INT NOT NULL,
-  course_id BIGINT REFERENCES courses(id) NOT NULL,
+  course_id BIGINT REFERENCES courses(id) NOT NULL ON DELETE CASCADE,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  deleted_at TIMESTAMP
+  deleted_at TIMESTAMP DEFAULT NULL
 );
 
 CREATE TABLE modules (
@@ -26,7 +26,7 @@ CREATE TABLE modules (
   description TEXT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  deleted_at TIMESTAMP
+  deleted_at TIMESTAMP DEFAULT NULL
 );
 
 CREATE TABLE programs (
@@ -68,7 +68,7 @@ CREATE TABLE users (
   role VARCHAR(50) NOT NULL, -- 'student', 'teacher', 'admin'
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  deleted_at TIMESTAMP
+  deleted_at TIMESTAMP DEFAULT NULL
 );
 
 CREATE TYPE enrollment_status AS ENUM ('active', 'pending', 'cancelled', 'completed');
