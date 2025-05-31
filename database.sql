@@ -1,0 +1,169 @@
+-- Удаление таблиц, если они существуют
+DROP TABLE IF EXISTS discussions;
+DROP TABLE IF EXISTS program_completions;
+DROP TABLE IF EXISTS course_modules;
+DROP TABLE IF EXISTS program_modules;
+DROP TABLE IF EXISTS programs;
+DROP TABLE IF EXISTS modules;
+DROP TABLE IF EXISTS enrollments;
+DROP TABLE IF EXISTS payments;
+DROP TABLE IF EXISTS certificates;
+DROP TABLE IF EXISTS quizzes;
+DROP TABLE IF EXISTS exercises;
+DROP TABLE IF EXISTS blogs;
+DROP TABLE IF EXISTS lessons;
+DROP TABLE IF EXISTS courses;
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS teaching_groups;
+
+-- Создание таблиц
+CREATE TABLE courses (
+  id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  name VARCHAR(255) NOT NULL,
+  description TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  deleted_at TIMESTAMP DEFAULT NULL
+);
+
+CREATE TABLE lessons (
+  id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  name VARCHAR(255) NOT NULL,
+  content TEXT,
+  video_url VARCHAR(255),
+  position INT,
+  course_id BIGINT REFERENCES courses(id),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  deleted_at TIMESTAMP DEFAULT NULL
+);
+
+CREATE TABLE modules (
+  id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  name VARCHAR(255) NOT NULL,
+  description TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  deleted_at TIMESTAMP DEFAULT NULL
+);
+
+CREATE TABLE programs (
+  id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  name VARCHAR(255) NOT NULL,
+  price DECIMAL(10, 2) NOT NULL,
+  program_type VARCHAR(50),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE program_modules (
+  program_id BIGINT NOT NULL REFERENCES programs(id),
+  module_id BIGINT NOT NULL REFERENCES modules(id),
+  PRIMARY KEY (program_id, module_id)
+);
+
+CREATE TABLE course_modules (
+  course_id BIGINT NOT NULL REFERENCES courses(id),
+  module_id BIGINT NOT NULL REFERENCES modules(id),
+  PRIMARY KEY (course_id, module_id)
+);
+
+CREATE TABLE teaching_groups (
+  id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  slug VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE users (
+  id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  name VARCHAR(255) NOT NULL,
+  email VARCHAR(255) NOT NULL UNIQUE,
+  password_hash VARCHAR(60),
+  teaching_group_id BIGINT REFERENCES teaching_groups(id),
+  role VARCHAR(50) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  deleted_at TIMESTAMP DEFAULT NULL
+);
+
+CREATE TYPE enrollment_status AS ENUM ('active', 'pending', 'cancelled', 'completed');
+CREATE TYPE payment_status AS ENUM ('pending', 'paid', 'failed', 'refunded');
+CREATE TYPE program_status AS ENUM ('active', 'completed', 'cancelled');
+
+CREATE TABLE enrollments (
+  id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  user_id BIGINT REFERENCES users(id) NOT NULL,
+  program_id BIGINT REFERENCES programs (id) NOT NULL,
+  status enrollment_status NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE payments (
+  id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  enrollment_id BIGINT REFERENCES enrollments (id) NOT NULL,
+  amount DECIMAL(10, 2) NOT NULL,
+  status payment_status,
+  paid_at TIMESTAMP,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE program_completions (
+  id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  user_id BIGINT REFERENCES users (id) NOT NULL,
+  program_id BIGINT REFERENCES programs (id) NOT NULL,
+  status program_status NOT NULL,
+  started_at TIMESTAMP,
+  completed_at TIMESTAMP,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE certificates (
+  id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  user_id BIGINT REFERENCES users (id) NOT NULL,
+  program_id BIGINT REFERENCES programs (id) NOT NULL,
+  url VARCHAR(255) NOT NULL,
+  issued_at TIMESTAMP,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE quizzes (
+  id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  lesson_id BIGINT REFERENCES lessons (id) NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  content JSONB NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE exercises (
+  id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  lesson_id BIGINT REFERENCES lessons (id) NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  url VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE discussions (
+  id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  lesson_id BIGINT REFERENCES lessons (id) NOT NULL,
+  user_id BIGINT REFERENCES users (id) NOT NULL,
+  text JSONB NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TYPE blog_status AS ENUM ('created', 'in moderation', 'published', 'archived');
+CREATE TABLE blogs (
+  id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  user_id BIGINT REFERENCES users (id) NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  content TEXT NOT NULL,
+  status blog_status NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
